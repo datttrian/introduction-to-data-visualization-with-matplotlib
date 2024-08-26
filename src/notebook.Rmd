@@ -1,8 +1,21 @@
-# Introduction to Data Visualization with Matplotlib
+---
+title: "Introduction to Data Visualization with Matplotlib"
+subtitle: "Instructor: Ariel Rokem - Senior Data Scientist"
+date: "`r Sys.Date()`"
+author:
+  - name: "Dat Thanh Tran"
+output:
+  rmdformats::robobook:
+    keep_md: true
+    thumbnails: true
+    lightbox: true
+    gallery: true
+    use_bookdown: true
+---
 
-## Introduction to Matplotlib
+# Introduction to Matplotlib
 
-### Using the matplotlib.pyplot interface
+## Using the matplotlib.pyplot interface
 
 There are many ways to use Matplotlib. In this course, we will focus on
 the `pyplot` interface, which provides the most flexibility in creating
@@ -25,10 +38,17 @@ and keep it handy!*
 **Answer**
 
 ```{python}
+# Import the matplotlib.pyplot submodule and name it plt
+import matplotlib.pyplot as plt
 
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+
+# Call the show function to show the result
+plt.show()
 ```
 
-### Adding data to an Axes object
+## Adding data to an Axes object
 
 Adding data to a figure is done by calling methods of the `Axes` object.
 In this exercise, we will use the `plot` method to add data about
@@ -57,10 +77,33 @@ compare the rainfall in these two cities.
 **Answer**
 
 ```{python}
-
+# added/edited
+import pandas as pd
+austin_weather = pd.read_csv("austin_weather.csv")
+austin_weather["MONTH"] = austin_weather["DATE"]
+seattle_weather = pd.read_csv("seattle_weather.csv")
+seattle_weather = seattle_weather[seattle_weather["STATION"] == "USW00094290"]
+seattle_weather["MONTH"] = seattle_weather["DATE"]
 ```
 
-### Customizing data appearance
+```{python}
+# Import the matplotlib.pyplot submodule and name it plt
+import matplotlib.pyplot as plt
+
+# Create a Figure and an Axes with plt.subplots
+fig, ax = plt.subplots()
+
+# Plot MLY-PRCP-NORMAL from seattle_weather against MONTH
+ax.plot(seattle_weather["MONTH"], seattle_weather["MLY-PRCP-NORMAL"])
+
+# Plot MLY-PRCP-NORMAL from austin_weather against MONTH
+ax.plot(austin_weather["MONTH"], austin_weather["MLY-PRCP-NORMAL"])
+
+# Call the show function
+plt.show()
+```
+
+## Customizing data appearance
 
 We can customize the appearance of data in our plots, while adding the
 data to the plot, using key-word arguments to the plot command.
@@ -92,10 +135,22 @@ have already been created for you.
 **Answer**
 
 ```{python}
+# added/edited
+fig, ax = plt.subplots()
 
+# Plot Seattle data, setting data appearance
+ax.plot(seattle_weather["MONTH"], seattle_weather["MLY-PRCP-NORMAL"],
+        color='b', marker='o', linestyle='--')
+
+# Plot Austin data, setting data appearance
+ax.plot(austin_weather["MONTH"], austin_weather["MLY-PRCP-NORMAL"],
+        color='r', marker='v', linestyle='--')
+
+# Call show to display the resulting plot
+plt.show()
 ```
 
-### Customizing axis labels and adding titles
+## Customizing axis labels and adding titles
 
 Customizing the axis labels requires using the `set_xlabel` and
 `set_ylabel` methods of the Axes object. Adding a title uses the
@@ -124,10 +179,26 @@ have already been created for you.
 **Answer**
 
 ```{python}
+# added/edited
+fig, ax = plt.subplots()
 
+ax.plot(seattle_weather["MONTH"], seattle_weather["MLY-PRCP-NORMAL"])
+ax.plot(austin_weather["MONTH"], austin_weather["MLY-PRCP-NORMAL"])
+
+# Customize the x-axis label
+ax.set_xlabel("Time (months)")
+
+# Customize the y-axis label
+ax.set_ylabel("Precipitation (inches)")
+
+# Add the title
+ax.set_title("Weather patterns in Austin and Seattle")
+
+# Display the figure
+plt.show()
 ```
 
-### Creating small multiples with plt.subplots
+## Creating small multiples with plt.subplots
 
 Small multiples are used to plot several datasets side-by-side. In
 Matplotlib, small multiples can be created using the `plt.subplots()`
@@ -155,10 +226,24 @@ and average temperatures in each city.
 **Answer**
 
 ```{python}
+# Create a Figure and an array of subplots with 2 rows and 2 columns
+fig, ax = plt.subplots(2, 2)
 
+# Addressing the top left Axes as index 0, 0, plot month and Seattle precipitation
+ax[0, 0].plot(seattle_weather["MONTH"], seattle_weather["MLY-PRCP-NORMAL"])
+
+# In the top right (index 0,1), plot month and Seattle temperatures
+ax[0, 1].plot(seattle_weather["MONTH"], seattle_weather["MLY-TAVG-NORMAL"])
+
+# In the bottom left (1, 0) plot month and Austin precipitations
+ax[1, 0].plot(austin_weather["MONTH"], austin_weather["MLY-PRCP-NORMAL"])
+
+# In the bottom right (1, 1) plot month and Austin temperatures
+ax[1, 1].plot(austin_weather["MONTH"], austin_weather["MLY-TAVG-NORMAL"])
+plt.show()
 ```
 
-### Small multiples with shared y axis
+## Small multiples with shared y axis
 
 When creating small multiples, it is often preferable to make sure that
 the different plots are displayed with the same scale used on the
@@ -183,9 +268,26 @@ and `austin_weather` DataFrames.
 
 **Answer**
 
-## Plotting time-series
+```{python}
+# Create a figure and an array of axes: 2 rows, 1 column with shared y axis
+fig, ax = plt.subplots(2, 1, sharey=True)
 
-### Read data with a time index
+# Plot Seattle precipitation in the top axes
+ax[0].plot(seattle_weather["MONTH"], seattle_weather["MLY-PRCP-NORMAL"], color='b')
+ax[0].plot(seattle_weather["MONTH"], seattle_weather["MLY-PRCP-25PCTL"], color='b', linestyle='--')
+ax[0].plot(seattle_weather["MONTH"], seattle_weather["MLY-PRCP-75PCTL"], color='b', linestyle='--')
+
+# Plot Austin precipitation in the bottom axes
+ax[1].plot(austin_weather["MONTH"], austin_weather["MLY-PRCP-NORMAL"], color='r')
+ax[1].plot(austin_weather["MONTH"], austin_weather["MLY-PRCP-25PCTL"], color='r', linestyle='--')
+ax[1].plot(austin_weather["MONTH"], austin_weather["MLY-PRCP-75PCTL"], color='r', linestyle='--')
+
+plt.show()
+```
+
+# Plotting time-series
+
+## Read data with a time index
 
 pandas DataFrame objects can have an index denoting time, this
 recognized by Matplotlib for axis labeling.
@@ -212,10 +314,14 @@ for a quick overview of essential concepts and methods.
 **Answer**
 
 ```{python}
+# Import pandas
+import pandas as pd
 
+# Read the data from file using read_csv
+climate_change = pd.read_csv('climate_change.csv', parse_dates=["date"], index_col="date")
 ```
 
-### Plot time-series data
+## Plot time-series data
 
 To plot time-series data, we use the `Axes` object `plot` command. The
 first argument to this method are the values for the x-axis and the
@@ -242,10 +348,23 @@ y-axis.
 **Answer**
 
 ```{python}
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots()
 
+# Add the time-series for "relative_temp" to the plot
+ax.plot(climate_change.index, climate_change['relative_temp'])
+
+# Set the x-axis label
+ax.set_xlabel('Time')
+
+# Set the y-axis label 
+ax.set_ylabel('Relative temperature (Celsius)')
+
+# Show the figure
+plt.show()
 ```
 
-### Using a time index to zoom in
+## Using a time index to zoom in
 
 When a time-series is represented with a time index, we can use this
 index for the x-axis when plotting. We can also select a range of dates
@@ -269,10 +388,22 @@ has a time-index with dates of measurements and two data columns:
 **Answer**
 
 ```{python}
+import matplotlib.pyplot as plt
 
+# Use plt.subplots to create fig and ax
+fig, ax = plt.subplots()
+
+# Create variable seventies with data from "1970-01-01" to "1979-12-31"
+seventies = climate_change["1970-01-01":"1979-12-31"]
+
+# Add the time-series for "co2" data from seventies to the plot
+ax.plot(seventies.index, seventies["co2"])
+
+# Show the figure
+plt.show()
 ```
 
-### Plotting two variables
+## Plotting two variables
 
 If you want to plot two time-series variables that were recorded at the
 same times, you can add both of them to the same subplot.
@@ -304,10 +435,24 @@ In this exercise, you'll have access to a DataFrame that has the
 **Answer**
 
 ```{python}
+import matplotlib.pyplot as plt
 
+# Initalize a Figure and Axes
+fig, ax = plt.subplots()
+
+# Plot the CO2 variable in blue
+ax.plot(climate_change.index, climate_change["co2"], color='blue')
+
+# Create a twin Axes that shares the x-axis
+ax2 = ax.twinx()
+
+# Plot the relative temperature in red
+ax2.plot(climate_change.index, climate_change["relative_temp"], color='red')
+
+plt.show()
 ```
 
-### Defining a function that plots time-series data
+## Defining a function that plots time-series data
 
 Once you realize that a particular section of code that you have written
 is useful, it is a good idea to define a function that saves that
@@ -333,10 +478,23 @@ y-axis label, the y-axis ticks and the tick labels.
 **Answer**
 
 ```{python}
+# Define a function called plot_timeseries
+def plot_timeseries(axes, x, y, color, xlabel, ylabel):
 
+  # Plot the inputs x,y in the provided color
+  axes.plot(x, y, color=color)
+
+  # Set the x-axis label
+  axes.set_xlabel(xlabel)
+
+  # Set the y-axis label
+  axes.set_ylabel(ylabel, color=color)
+
+  # Set the colors tick params for y-axis
+  axes.tick_params('y', colors=color)
 ```
 
-### Using a plotting function
+## Using a plotting function
 
 Defining functions allows us to reuse the same code without having to
 repeat all of it. Programmers sometimes say ["Don't repeat
@@ -372,10 +530,21 @@ dates of the measurements and `co2` and `relative_temp` columns.
 **Answer**
 
 ```{python}
+fig, ax = plt.subplots()
 
+# Plot the CO2 levels time-series in blue
+plot_timeseries(ax, climate_change.index, climate_change["co2"], 'blue', "Time (years)", "CO2 levels")
+
+# Create a twin Axes object that shares the x-axis
+ax2 = ax.twinx()
+
+# Plot the relative temperature data in red
+plot_timeseries(ax2, climate_change.index, climate_change['relative_temp'], 'red', "Time (years)", "Relative temperature (Celsius)")
+
+plt.show()
 ```
 
-### Annotating a plot of time-series data
+## Annotating a plot of time-series data
 
 Annotating a plot allows us to highlight interesting information in the
 plot. For example, in describing the climate change dataset, we might
@@ -397,10 +566,18 @@ column as a function of dates, and annotate the data.
 **Answer**
 
 ```{python}
+fig, ax = plt.subplots()
 
+# Plot the relative temperature data
+ax.plot(climate_change.index, climate_change['relative_temp'])
+
+# Annotate the date at which temperatures exceeded 1 degree
+ax.annotate(">1 degree", xy=(pd.Timestamp('2015-10-06'), 1))
+
+plt.show()
 ```
 
-### Plotting time-series: putting it all together
+## Plotting time-series: putting it all together
 
 In this exercise, you will plot two time-series with different scales on
 the same Axes, and annotate the data from one of these series.
@@ -432,9 +609,27 @@ the average.
 
 **Answer**
 
-## Quantitative comparisons and statistical visualizations
+```{python}
+fig, ax = plt.subplots()
 
-### Bar chart
+# Plot the CO2 levels time-series in blue
+plot_timeseries(ax, climate_change.index, climate_change["co2"], 'blue', "Time (years)", "CO2 levels")
+
+# Create an Axes object that shares the x-axis
+ax2 = ax.twinx()
+
+# Plot the relative temperature data in red
+plot_timeseries(ax2, climate_change.index, climate_change['relative_temp'], 'red', "Time (years)", "Relative temp (Celsius)")
+
+# Annotate the point with relative temperature >1 degree
+ax2.annotate(">1 degree", xy=(pd.Timestamp('2015-10-06'), 1), xytext=(pd.Timestamp('2008-10-06'), -0.2), arrowprops={'arrowstyle':'->', 'color':'gray'})
+
+plt.show()
+```
+
+# Quantitative comparisons and statistical visualizations
+
+## Bar chart
 
 Bar charts visualize data that is organized according to categories as a
 series of bars, where the height of each bar represents the values of
@@ -459,10 +654,26 @@ according to their rows.
 **Answer**
 
 ```{python}
-
+# added/edited
+medals = pd.read_csv("medals_by_country_2016.csv", index_col = 0)
 ```
 
-### Stacked bar chart
+```{python}
+fig, ax = plt.subplots()
+
+# Plot a bar-chart of gold medals as a function of country
+ax.bar(medals.index, medals["Gold"])
+
+# Set the x-axis tick labels to the country names
+ax.set_xticklabels(medals.index, rotation=90)
+
+# Set the y-axis label
+ax.set_ylabel("Number of medals")
+
+plt.show()
+```
+
+## Stacked bar chart
 
 A stacked bar chart contains bars, where the height of each bar
 represents values. In addition, stacked on top of the first variable may
@@ -492,10 +703,25 @@ and create a legend that indicates which bars represent which medals.
 **Answer**
 
 ```{python}
+# added/edited
+fig, ax = plt.subplots()
 
+# Add bars for "Gold" with the label "Gold"
+ax.bar(medals.index, medals["Gold"], label="Gold")
+
+# Stack bars for "Silver" on top with label "Silver"
+ax.bar(medals.index, medals["Silver"], bottom=medals["Gold"], label="Silver")
+
+# Stack bars for "Bronze" on top of that with label "Bronze"
+ax.bar(medals.index, medals["Bronze"], bottom=medals["Gold"] + medals["Silver"], label="Bronze")
+
+# Display the legend
+ax.legend()
+
+plt.show()
 ```
 
-### Creating histograms
+## Creating histograms
 
 Histograms show the full distribution of a variable. In this exercise,
 we will display the distribution of weights of medalists in gymnastics
@@ -518,10 +744,30 @@ medalists in all of the Gymnastics events.
 **Answer**
 
 ```{python}
-
+# added/edited
+summer_2016_medals = pd.read_csv("summer2016.csv")
+mens_rowing = summer_2016_medals[(summer_2016_medals['Sport'] == 'Rowing') & (summer_2016_medals['Sex'] == 'M')]
+mens_gymnastics = summer_2016_medals[(summer_2016_medals['Sport'] == 'Gymnastics') & (summer_2016_medals['Sex'] == 'M')]
 ```
 
-### "Step" histogram
+```{python}
+fig, ax = plt.subplots()
+# Plot a histogram of "Weight" for mens_rowing
+ax.hist(mens_rowing["Weight"])
+
+# Compare to histogram of "Weight" for mens_gymnastics
+ax.hist(mens_gymnastics["Weight"])
+
+# Set the x-axis label to "Weight (kg)"
+ax.set_xlabel("Weight (kg)")
+
+# Set the y-axis label to "# of observations"
+ax.set_ylabel("# of observations")
+
+plt.show()
+```
+
+## "Step" histogram
 
 Histograms allow us to see the distributions of the data in different
 groups in our data. In this exercise, you will select groups from the
@@ -549,10 +795,23 @@ medalists in these two sports.
 **Answer**
 
 ```{python}
+fig, ax = plt.subplots()
 
+# Plot a histogram of "Weight" for mens_rowing
+ax.hist(mens_rowing["Weight"], histtype='step', label="Rowing", bins=5)
+
+# Compare to histogram of "Weight" for mens_gymnastics
+ax.hist(mens_gymnastics["Weight"], histtype='step', label="Gymnastics", bins=5)
+
+ax.set_xlabel("Weight (kg)")
+ax.set_ylabel("# of observations")
+
+# Add the legend and show the Figure
+ax.legend()
+plt.show()
 ```
 
-### Adding error-bars to a bar chart
+## Adding error-bars to a bar chart
 
 Statistical plotting techniques add quantitative information for
 comparisons into the visualization. For example, in this exercise, we
@@ -578,10 +837,21 @@ gymnastics events.
 **Answer**
 
 ```{python}
+fig, ax = plt.subplots()
 
+# Add a bar for the rowing "Height" column mean/std
+ax.bar("Rowing", mens_rowing["Height"].mean(), yerr=mens_rowing["Height"].std())
+
+# Add a bar for the gymnastics "Height" column mean/std
+ax.bar("Gymnastics", mens_gymnastics["Height"].mean(), yerr=mens_gymnastics["Height"].std())
+
+# Label the y-axis
+ax.set_ylabel("Height (cm)")
+
+plt.show()
 ```
 
-### Adding error-bars to a plot
+## Adding error-bars to a plot
 
 Adding error-bars to a plot is done by using the `errorbar` method of
 the `Axes` object.
@@ -609,10 +879,21 @@ add the standard deviation at each point as y errorbars.
 **Answer**
 
 ```{python}
+fig, ax = plt.subplots()
 
+# Add the Seattle temperature data in each month with standard deviation error bars
+ax.errorbar(seattle_weather["MONTH"], seattle_weather["MLY-TAVG-NORMAL"], yerr=seattle_weather["MLY-TAVG-STDDEV"])
+
+# Add the Austin temperature data in each month with standard deviation error bars
+ax.errorbar(austin_weather["MONTH"], austin_weather["MLY-TAVG-NORMAL"], yerr=austin_weather["MLY-TAVG-STDDEV"])
+
+# Set the y-axis label
+ax.set_ylabel("Temperature (Fahrenheit)")
+
+plt.show()
 ```
 
-### Creating boxplots
+## Creating boxplots
 
 Boxplots provide additional information about the distribution of the
 data that they represent. They tell us what the median of the
@@ -638,10 +919,21 @@ available to you, and both of these DataFrames have columns called
 **Answer**
 
 ```{python}
+fig, ax = plt.subplots()
 
+# Add a boxplot for the "Height" column in the DataFrames
+ax.boxplot([mens_rowing["Height"], mens_gymnastics["Height"]])
+
+# Add x-axis tick labels:
+ax.set_xticklabels(["Rowing", "Gymnastics"])
+
+# Add a y-axis label
+ax.set_ylabel("Height (cm)")
+
+plt.show()
 ```
 
-### Simple scatter plot
+## Simple scatter plot
 
 Scatter are a bi-variate visualization technique. They plot each record
 in the data as a point. The location of each point is determined by the
@@ -665,10 +957,21 @@ same time.
 **Answer**
 
 ```{python}
+fig, ax = plt.subplots()
 
+# Add data: "co2" on x-axis, "relative_temp" on y-axis
+ax.scatter(climate_change["co2"], climate_change["relative_temp"])
+
+# Set the x-axis label to "CO2 (ppm)"
+ax.set_xlabel("CO2 (ppm)")
+
+# Set the y-axis label to "Relative temperature (C)"
+ax.set_ylabel("Relative temperature (C)")
+
+plt.show()
 ```
 
-### Encoding time by color
+## Encoding time by color
 
 The screen only has two dimensions, but we can encode another dimension
 in the scatter plot using color. Here, we will visualize the
@@ -690,12 +993,23 @@ yellow.
 **Answer**
 
 ```{python}
+fig, ax = plt.subplots()
 
+# Add data: "co2", "relative_temp" as x-y, index as color
+ax.scatter(climate_change["co2"], climate_change["relative_temp"], c=climate_change.index)
+
+# Set the x-axis label to "CO2 (ppm)"
+ax.set_xlabel("CO2 (ppm)")
+
+# Set the y-axis label to "Relative temperature (C)"
+ax.set_ylabel("Relative temperature (C)")
+
+plt.show()
 ```
 
-## Sharing visualizations with others
+# Sharing visualizations with others
 
-### Switching between styles
+## Switching between styles
 
 Selecting a style to use affects all of the visualizations that are
 created after this style is selected.
@@ -717,10 +1031,22 @@ and a new Axes object called `ax` with `plt.subplots`.
 **Answer**
 
 ```{python}
-
+# Use the "ggplot" style and create new Figure/Axes
+plt.style.use('ggplot')
+fig, ax = plt.subplots()
+ax.plot(seattle_weather["MONTH"], seattle_weather["MLY-TAVG-NORMAL"])
+plt.show()
 ```
 
-### Saving a file several times
+```{python}
+# Use the "Solarize_Light2" style and create new Figure/Axes
+plt.style.use('Solarize_Light2')
+fig, ax = plt.subplots()
+ax.plot(austin_weather["MONTH"], austin_weather["MLY-TAVG-NORMAL"])
+plt.show()
+```
+
+## Saving a file several times
 
 If you want to share your visualizations with others, you will need to
 save them into files. Matplotlib provides as way to do that, through the
@@ -742,10 +1068,24 @@ resolution to 300 dpi.
 **Answer**
 
 ```{python}
+# added/edited
+plt.style.use("default")
+fig, ax = plt.subplots()
+ax.bar(medals.index, medals["Gold"])
+ax.set_xticklabels(medals.index, rotation=90)
+ax.set_ylabel("Number of medals")
 
+# Show the figure
+plt.show()
+
+# Save as a PNG file
+fig.savefig('my_figure.png')
+
+# Save as a PNG file with 300 dpi
+fig.savefig('my_figure_300dpi.png', dpi=300)
 ```
 
-### Save a figure with different sizes
+## Save a figure with different sizes
 
 Before saving your visualization, you might want to also set the size
 that the figure will have on the page. To do so, you can use the
@@ -769,10 +1109,18 @@ it as `'figure_5_3.png'` with default settings.
 **Answer**
 
 ```{python}
-
+# Set figure dimensions and save as a PNG
+fig.set_size_inches([3, 5])
+fig.savefig('figure_3_5.png')
 ```
 
-### Unique values of a column
+```{python}
+# Set figure dimensions and save as a PNG
+fig.set_size_inches([5, 3])
+fig.savefig('figure_5_3.png')
+```
+
+## Unique values of a column
 
 One of the main strengths of Matplotlib is that it can be automated to
 adapt to the data that it receives as input. For example, if you receive
@@ -802,10 +1150,17 @@ column
 **Answer**
 
 ```{python}
+# Extract the "Sport" column
+sports_column = summer_2016_medals["Sport"]
 
+# Find the unique values of the "Sport" column
+sports = sports_column.unique()
+
+# Print out the unique sports values
+print(sports)
 ```
 
-### Automate your visualization
+## Automate your visualization
 
 One of the main strengths of Matplotlib is that it can be automated to
 adapt to the data that it receives as input. For example, if you receive
@@ -834,5 +1189,18 @@ also a `"Weight"` column that tells you the weight of each athlete.
 **Answer**
 
 ```{python}
+fig, ax = plt.subplots()
 
+# Loop over the different sports branches
+for sport in sports:
+  # Extract the rows only for this sport
+  sport_df = summer_2016_medals[summer_2016_medals["Sport"] == sport]
+  # Add a bar for the "Weight" mean with std y error bar
+  ax.bar(sport, sport_df["Weight"].mean(), yerr=sport_df["Weight"].std())
+
+ax.set_ylabel("Weight")
+ax.set_xticklabels(sports, rotation=90)
+
+# Save the figure to file
+fig.savefig("sports_weights.png")
 ```
